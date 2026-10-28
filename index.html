@@ -1,0 +1,1029 @@
+<html>
+        <head><title>Downloaded HTML</title></head>
+        <body>
+            <pre style="white-space: pre-wrap; word-wrap: break-word;"><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>kyvenn-istuff trusted dice</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  
+  <!-- Google Fonts: Inter & Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Outfit:wght@500;700;800;900&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['Outfit', 'sans-serif'],
+          },
+          animation: {
+            'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'shine': 'shine 4s linear infinite',
+          },
+          keyframes: {
+            shine: {
+              '0%': { backgroundPosition: '-200% 0' },
+              '100%': { backgroundPosition: '200% 0' },
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* ================= 3D TOUCHING COLOR DICE STYLES ================= */
+    .dice-container {
+      perspective: 900px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .dice-scene {
+      width: 80px;
+      height: 80px;
+      position: relative;
+    }
+
+    @media (min-width: 640px) {
+      .dice-scene {
+        width: 100px;
+        height: 100px;
+      }
+    }
+
+    .cube {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 1.2s cubic-bezier(0.18, 0.89, 0.32, 1.15);
+    }
+
+    .cube-face {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 12px;
+      border: 2px solid rgba(255, 255, 255, 0.45);
+      box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.35), 0 6px 14px rgba(0, 0, 0, 0.4);
+      backface-visibility: hidden;
+    }
+
+    /* 3D Rotations based on cube size */
+    .face-1 { transform: rotateY(0deg) translateZ(40px); }
+    .face-2 { transform: rotateY(180deg) translateZ(40px); }
+    .face-3 { transform: rotateY(-90deg) translateZ(40px); }
+    .face-4 { transform: rotateY(90deg) translateZ(40px); }
+    .face-5 { transform: rotateX(-90deg) translateZ(40px); }
+    .face-6 { transform: rotateX(90deg) translateZ(40px); }
+
+    @media (min-width: 640px) {
+      .face-1 { transform: rotateY(0deg) translateZ(50px); }
+      .face-2 { transform: rotateY(180deg) translateZ(50px); }
+      .face-3 { transform: rotateY(-90deg) translateZ(50px); }
+      .face-4 { transform: rotateY(90deg) translateZ(50px); }
+      .face-5 { transform: rotateX(-90deg) translateZ(50px); }
+      .face-6 { transform: rotateX(90deg) translateZ(50px); }
+    }
+
+    /* Pure Solid Glossy Color Faces (NO PIPS, DOTS, OR NUMBERS) */
+    .face-yellow { background: radial-gradient(circle at 30% 30%, #ffea70, #FFD700, #b89600); }
+    .face-red    { background: radial-gradient(circle at 30% 30%, #ff708f, #FF3366, #990026); }
+    .face-purple { background: radial-gradient(circle at 30% 30%, #c77dff, #9D4EDD, #5a189a); }
+    .face-orange { background: radial-gradient(circle at 30% 30%, #ffaa5b, #FF7B00, #9d3e00); }
+    .face-green  { background: radial-gradient(circle at 30% 30%, #57e3b3, #10B981, #046c47); }
+    .face-blue   { background: radial-gradient(circle at 30% 30%, #70aaff, #3B82F6, #1d4ed8); }
+
+    /* Glass Specular Overlay */
+    .cube-face::after {
+      content: '';
+      position: absolute;
+      top: 6%;
+      left: 10%;
+      width: 80%;
+      height: 35%;
+      background: linear-gradient(180deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0) 100%);
+      border-radius: 8px 8px 50% 50%;
+      pointer-events: none;
+    }
+
+    /* Presets for Board Themes */
+    .theme-midnight { background: radial-gradient(circle at 50% 20%, #1e1b4b 0%, #0f172a 60%, #020617 100%); }
+    .theme-felt     { background: radial-gradient(circle at 50% 20%, #065f46 0%, #022c22 60%, #011710 100%); }
+    .theme-neon     { background: radial-gradient(circle at 50% 20%, #2e1065 0%, #09090b 60%, #000000 100%); }
+    .theme-crimson  { background: radial-gradient(circle at 50% 20%, #831843 0%, #4c0519 60%, #020617 100%); }
+    .theme-royal    { background: radial-gradient(circle at 50% 20%, #1e3a8a 0%, #172554 60%, #020617 100%); }
+    .theme-purple   { background: radial-gradient(circle at 50% 20%, #581c87 0%, #3b0764 60%, #0f172a 100%); }
+
+    /* Glassmorphism Containers */
+    .glass-card {
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .shine-text {
+      background: linear-gradient(90deg, #fef08a 0%, #ffffff 25%, #fef08a 50%, #ffffff 75%, #fef08a 100%);
+      background-size: 200% auto;
+      color: transparent;
+      -webkit-background-clip: text;
+      background-clip: text;
+      animation: shine 4s linear infinite;
+    }
+
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
+  </style>
+</head>
+<body id="app-body" class="theme-midnight min-h-screen text-slate-100 font-sans transition-all duration-700 pb-12 select-none">
+
+  <!-- Particle Canvas for Match/Hit Confetti Effects -->
+  <canvas id="particle-canvas" class="fixed inset-0 pointer-events-none z-50"></canvas>
+
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 pt-6">
+
+    <!-- ================= 1. TITLE BANNER ================= -->
+    <header class="text-center mb-8 relative">
+      <div class="inline-block relative group">
+        <div class="absolute -inset-1 bg-gradient-to-r from-yellow-500 via-purple-500 to-blue-500 rounded-3xl blur-md opacity-80 group-hover:opacity-100 transition duration-500 animate-pulse-slow"></div>
+        <div class="relative px-6 py-4 sm:px-10 sm:py-5 bg-slate-950/90 border-2 border-amber-400/80 rounded-2xl shadow-2xl flex flex-col items-center justify-center">
+          
+          <div class="flex items-center gap-3 mb-1">
+            <i class="fa-solid fa-dice-d6 text-amber-400 text-2xl sm:text-3xl"></i>
+            <h1 class="font-display font-black text-2xl sm:text-4xl md:text-5xl tracking-wider uppercase shine-text drop-shadow-[0_2px_10px_rgba(234,179,8,0.5)]">
+              kyvenn-istuff trusted dice
+            </h1>
+            <i class="fa-solid fa-dice-d6 text-amber-400 text-2xl sm:text-3xl"></i>
+          </div>
+
+          <p class="text-xs sm:text-sm font-semibold tracking-widest text-amber-300/90 uppercase">
+            Endless Pure Color 4-Dice Platform
+          </p>
+        </div>
+      </div>
+
+      <!-- Quick Action Sound Toggle & Info Button -->
+      <div class="absolute right-0 top-0 flex items-center gap-2">
+        <button id="sound-toggle-btn" onclick="toggleSound()" class="p-3 bg-slate-800/80 hover:bg-slate-700 text-amber-400 rounded-xl border border-slate-600/60 shadow-lg transition" title="Toggle Sound FX">
+          <i id="sound-icon" class="fa-solid fa-volume-high text-lg"></i>
+        </button>
+        <button onclick="openInfoModal()" class="p-3 bg-slate-800/80 hover:bg-slate-700 text-amber-400 rounded-xl border border-slate-600/60 shadow-lg transition" title="Instructions">
+          <i class="fa-solid fa-circle-question text-lg"></i>
+        </button>
+      </div>
+    </header>
+
+
+    <!-- ================= 2. THREE INTERACTIVE OPTION BOXES ================= -->
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
+
+      <!-- BOX 1: Hit Color Settings -->
+      <div class="glass-card rounded-2xl p-5 shadow-xl relative overflow-hidden flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between mb-3 border-b border-slate-700/60 pb-2">
+            <h2 class="font-display font-bold text-base text-amber-400 flex items-center gap-2">
+              <i class="fa-solid fa-bullseye text-red-400"></i> Box 1: Hit Color Settings
+            </h2>
+            <div class="flex items-center gap-1">
+              <button onclick="setAllColors(true)" class="text-[10px] font-bold uppercase px-2 py-0.5 bg-emerald-600/40 hover:bg-emerald-600 text-emerald-200 rounded border border-emerald-500/40">All</button>
+              <button onclick="setAllColors(false)" class="text-[10px] font-bold uppercase px-2 py-0.5 bg-red-600/40 hover:bg-red-600 text-red-200 rounded border border-red-500/40">None</button>
+            </div>
+          </div>
+          <p class="text-xs text-slate-300 mb-3">Toggle which colors count as active target hit matches when landed:</p>
+        </div>
+        
+        <div id="hit-colors-container" class="grid grid-cols-3 gap-2">
+          <!-- Populated by JavaScript -->
+        </div>
+      </div>
+
+      <!-- BOX 2: Board Color & Style -->
+      <div class="glass-card rounded-2xl p-5 shadow-xl relative overflow-hidden flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between mb-3 border-b border-slate-700/60 pb-2">
+            <h2 class="font-display font-bold text-base text-amber-400 flex items-center gap-2">
+              <i class="fa-solid fa-palette text-purple-400"></i> Box 2: Board Color & Style
+            </h2>
+            <span id="current-theme-badge" class="text-[10px] font-bold px-2 py-0.5 bg-slate-800 rounded text-slate-300 border border-slate-700">Midnight</span>
+          </div>
+          <p class="text-xs text-slate-300 mb-3">Select a background board theme or choose a custom color:</p>
+        </div>
+        
+        <div class="space-y-3">
+          <div id="board-themes-container" class="grid grid-cols-3 gap-2">
+            <!-- Theme chips generated by JS -->
+          </div>
+
+          <!-- Custom Board Color Picker -->
+          <div class="flex items-center justify-between bg-slate-950/60 p-2 rounded-xl border border-slate-800">
+            <label for="custom-color-input" class="text-xs font-semibold text-slate-300 flex items-center gap-2">
+              <i class="fa-solid fa-eye-dropper text-amber-400"></i> Custom Color Picker:
+            </label>
+            <input type="color" id="custom-color-input" onchange="applyCustomBoardColor(this.value)" value="#0f172a" class="w-8 h-8 rounded-lg cursor-pointer bg-transparent border-0">
+          </div>
+        </div>
+      </div>
+
+      <!-- BOX 3: Roll & FX Settings -->
+      <div class="glass-card rounded-2xl p-5 shadow-xl relative overflow-hidden flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between mb-3 border-b border-slate-700/60 pb-2">
+            <h2 class="font-display font-bold text-base text-amber-400 flex items-center gap-2">
+              <i class="fa-solid fa-sliders text-blue-400"></i> Box 3: Roll & FX Settings
+            </h2>
+            <i class="fa-solid fa-wand-magic-sparkles text-slate-400"></i>
+          </div>
+
+          <div class="space-y-3 text-xs">
+            <!-- Roll Speed -->
+            <div class="flex items-center justify-between">
+              <label class="font-semibold text-slate-200">Roll Animation Speed:</label>
+              <select id="roll-speed-select" onchange="changeRollSpeed(this.value)" class="bg-slate-800 text-amber-300 font-bold border border-slate-600 rounded-lg px-2 py-1 focus:outline-none">
+                <option value="1200" selected>Normal (1.2s)</option>
+                <option value="600">Fast (0.6s)</option>
+                <option value="200">Turbo (0.2s)</option>
+              </select>
+            </div>
+
+            <!-- Match Confetti Toggle -->
+            <div class="flex items-center justify-between">
+              <label class="font-semibold text-slate-200">Match Confetti Effect:</label>
+              <button id="confetti-toggle-btn" onclick="toggleConfettiFX()" class="px-3 py-1 bg-emerald-600 text-white font-bold rounded-lg text-xs border border-emerald-400">
+                Enabled
+              </button>
+            </div>
+
+            <!-- Roll Feedback Display -->
+            <div class="flex items-center justify-between">
+              <label class="font-semibold text-slate-200">Show Roll Hit Badges:</label>
+              <button id="feedback-toggle-btn" onclick="toggleFeedback()" class="px-3 py-1 bg-emerald-600 text-white font-bold rounded-lg text-xs border border-emerald-400">
+                On
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+
+    <!-- ================= 3. CENTER DICE DISPLAY (4 TOUCHING COLOR DICE) ================= -->
+    <main class="mb-8">
+      <div class="glass-card rounded-3xl p-6 sm:p-10 shadow-2xl border border-amber-500/20 relative flex flex-col items-center">
+        
+        <div class="text-center mb-6">
+          <span class="px-4 py-1.5 rounded-full bg-amber-400/10 border border-amber-400/30 text-amber-300 text-xs font-bold uppercase tracking-widest">
+            4 Touching Pure Color Dice
+          </span>
+        </div>
+
+        <!-- CENTER AREA: 4 CUBIC COLOR DICE TOUCHING SIDE-BY-SIDE (gap-0) -->
+        <div class="dice-container mb-6 overflow-visible py-4 px-2">
+          <div class="flex flex-row justify-center items-center gap-0 bg-slate-950/80 p-3 rounded-2xl border-2 border-slate-700 shadow-2xl">
+            
+            <!-- DIE 1 -->
+            <div class="dice-scene">
+              <div id="cube-0" class="cube"></div>
+            </div>
+
+            <!-- DIE 2 -->
+            <div class="dice-scene">
+              <div id="cube-1" class="cube"></div>
+            </div>
+
+            <!-- DIE 3 -->
+            <div class="dice-scene">
+              <div id="cube-2" class="cube"></div>
+            </div>
+
+            <!-- DIE 4 -->
+            <div class="dice-scene">
+              <div id="cube-3" class="cube"></div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Landed Color Readout Badges -->
+        <div id="dice-results-bar" class="flex items-center justify-center gap-2 mb-6 flex-wrap min-h-[36px]">
+          <span class="text-xs text-slate-400 italic">Press SPIN DICE or hit Spacebar to roll endless times!</span>
+        </div>
+
+
+        <!-- ================= 4. UNDER-DICE POINT ADJUSTMENT CONTROL STRIP ================= -->
+        <!-- Feature: -10 -5 -1 on left side, +0 in middle, +1 +5 +10 on right side -->
+        <div class="w-full max-w-xl bg-slate-950/90 rounded-2xl p-4 border border-slate-700/80 shadow-inner mb-6">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-bold uppercase tracking-wider text-slate-300">
+              <i class="fa-solid fa-calculator text-amber-400 mr-1"></i> Manual Counter Adjustment Strip
+            </span>
+            <div class="text-xs">
+              <span class="text-slate-400">Current Counter:</span>
+              <span id="manual-counter-display" class="font-display font-black text-amber-400 text-base ml-1">0</span>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between gap-1 sm:gap-2">
+            
+            <!-- Left Side: Negatives (-10, -5, -1) -->
+            <div class="flex items-center gap-1">
+              <button onclick="adjustManualCounter(-10)" class="px-2.5 py-2 sm:px-3.5 sm:py-2.5 bg-red-950/90 hover:bg-red-800 text-red-300 hover:text-white font-black text-xs sm:text-sm rounded-xl border border-red-700/60 shadow transition active:scale-95">
+                -10
+              </button>
+              <button onclick="adjustManualCounter(-5)" class="px-2.5 py-2 sm:px-3.5 sm:py-2.5 bg-red-950/90 hover:bg-red-800 text-red-300 hover:text-white font-black text-xs sm:text-sm rounded-xl border border-red-700/60 shadow transition active:scale-95">
+                -5
+              </button>
+              <button onclick="adjustManualCounter(-1)" class="px-2.5 py-2 sm:px-3.5 sm:py-2.5 bg-red-950/90 hover:bg-red-800 text-red-300 hover:text-white font-black text-xs sm:text-sm rounded-xl border border-red-700/60 shadow transition active:scale-95">
+                -1
+              </button>
+            </div>
+
+            <!-- Middle: +0 -->
+            <button onclick="adjustManualCounter(0)" class="px-3 py-2 sm:px-5 sm:py-2.5 bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-sm sm:text-base rounded-xl shadow-lg ring-2 ring-amber-300 transition active:scale-95">
+              +0
+            </button>
+
+            <!-- Right Side: Positives (+1, +5, +10) -->
+            <div class="flex items-center gap-1">
+              <button onclick="adjustManualCounter(1)" class="px-2.5 py-2 sm:px-3.5 sm:py-2.5 bg-emerald-950/90 hover:bg-emerald-800 text-emerald-300 hover:text-white font-black text-xs sm:text-sm rounded-xl border border-emerald-700/60 shadow transition active:scale-95">
+                +1
+              </button>
+              <button onclick="adjustManualCounter(5)" class="px-2.5 py-2 sm:px-3.5 sm:py-2.5 bg-emerald-950/90 hover:bg-emerald-800 text-emerald-300 hover:text-white font-black text-xs sm:text-sm rounded-xl border border-emerald-700/60 shadow transition active:scale-95">
+                +5
+              </button>
+              <button onclick="adjustManualCounter(10)" class="px-2.5 py-2 sm:px-3.5 sm:py-2.5 bg-emerald-950/90 hover:bg-emerald-800 text-emerald-300 hover:text-white font-black text-xs sm:text-sm rounded-xl border border-emerald-700/60 shadow transition active:scale-95">
+                +10
+              </button>
+            </div>
+
+          </div>
+        </div>
+
+
+        <!-- ================= MAIN SPIN BUTTON & CONTROLS ================= -->
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4 w-full max-w-lg">
+          
+          <button id="spin-btn" onclick="spinDice()" class="relative group w-full px-10 py-5 bg-gradient-to-r from-amber-500 via-amber-400 to-yellow-500 hover:from-amber-400 hover:to-yellow-300 text-slate-950 font-display font-black text-2xl uppercase tracking-wider rounded-2xl shadow-[0_10px_25px_rgba(234,179,8,0.4)] hover:shadow-[0_15px_35px_rgba(234,179,8,0.6)] active:scale-95 transition border-2 border-amber-200 flex items-center justify-center gap-3">
+            <i class="fa-solid fa-rotate text-2xl group-hover:rotate-180 transition-transform duration-700"></i>
+            <span>SPIN DICE</span>
+          </button>
+
+          <div class="flex items-center gap-2 w-full sm:w-auto">
+            <button id="auto-spin-btn" onclick="toggleAutoSpin()" class="flex-1 sm:flex-initial px-4 py-3 bg-slate-800/90 hover:bg-slate-700 text-slate-200 font-bold text-xs uppercase tracking-wider rounded-xl border border-slate-600 flex items-center justify-center gap-2 transition whitespace-nowrap">
+              <i class="fa-solid fa-bolt text-amber-400"></i> Auto Spin
+            </button>
+            <button onclick="resetCounters()" class="flex-1 sm:flex-initial px-4 py-3 bg-slate-800/90 hover:bg-red-900/60 text-slate-300 hover:text-red-300 font-bold text-xs uppercase tracking-wider rounded-xl border border-slate-600 hover:border-red-500/50 flex items-center justify-center gap-2 transition whitespace-nowrap" title="Reset Counter">
+              <i class="fa-solid fa-arrow-rotate-left"></i> Clear
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+    </main>
+
+
+    <!-- ================= ROLL STATS & HISTORY LOG ================= -->
+    <footer class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      
+      <!-- Color Distribution Statistics -->
+      <div class="glass-card rounded-2xl p-5 shadow-xl">
+        <div class="flex items-center justify-between mb-3 border-b border-slate-700/60 pb-2">
+          <h3 class="font-display font-bold text-sm text-amber-400 flex items-center gap-2">
+            <i class="fa-solid fa-chart-simple"></i> Color Stats
+          </h3>
+          <span class="text-xs text-slate-400">Total Rolls: <strong id="total-rolls-count" class="text-slate-200">0</strong></span>
+        </div>
+
+        <div id="color-stats-list" class="space-y-2 text-xs">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- Live Roll History Log (2 cols) -->
+      <div class="lg:col-span-2 glass-card rounded-2xl p-5 shadow-xl">
+        <div class="flex items-center justify-between mb-4 border-b border-slate-700/60 pb-2">
+          <h3 class="font-display font-bold text-sm text-amber-400 flex items-center gap-2">
+            <i class="fa-solid fa-clock-rotate-left"></i> Live Roll History
+          </h3>
+          <span class="text-xs text-slate-400" id="history-count">0 rolls recorded</span>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-xs text-left">
+            <thead class="text-slate-400 uppercase bg-slate-950/60 border-b border-slate-800">
+              <tr>
+                <th class="p-2">Roll #</th>
+                <th class="p-2">Landed Colors</th>
+                <th class="p-2 text-center">Hit Matches</th>
+              </tr>
+            </thead>
+            <tbody id="history-table-body" class="divide-y divide-slate-800/60">
+              <tr>
+                <td colspan="3" class="p-4 text-center text-slate-500 italic">No rolls recorded yet. Press SPIN DICE to roll!</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </footer>
+
+  </div>
+
+
+  <!-- ================= INSTRUCTIONS MODAL ================= -->
+  <div id="info-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-slate-900 border border-slate-700 rounded-3xl p-6 max-w-lg w-full shadow-2xl relative">
+      <div class="flex items-center justify-between mb-4 border-b border-slate-700 pb-2">
+        <h3 class="font-display font-bold text-xl text-amber-400">kyvenn-istuff trusted dice Guide</h3>
+        <button onclick="closeInfoModal()" class="text-slate-400 hover:text-white text-xl"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="space-y-3 text-xs text-slate-300 max-h-80 overflow-y-auto pr-2">
+        <p>Welcome to <strong>kyvenn-istuff trusted dice</strong>!</p>
+        <ul class="list-disc pl-4 space-y-2">
+          <li><strong>Endless Rolling:</strong> There are no target scores, bank limits, or forced game resets. Roll the dice as many times as you want!</li>
+          <li><strong>Box 1 (Hit Colors):</strong> Customize which color faces count as active target hits.</li>
+          <li><strong>Box 2 (Board Style):</strong> Change the board background surface color or pick any custom color.</li>
+          <li><strong>Box 3 (Roll & FX):</strong> Change dice spin animation speed, sound effects, or confetti effects.</li>
+          <li><strong>Under-Dice Control Strip:</strong> Click <code class="text-amber-300">-10, -5, -1, +0, +1, +5, +10</code> to adjust your manual counter whenever needed.</li>
+          <li><strong>Keyboard Shortcut:</strong> Press the <code class="text-amber-300">Spacebar</code> key to trigger a roll!</li>
+        </ul>
+      </div>
+
+      <div class="mt-6 text-center">
+        <button onclick="closeInfoModal()" class="px-6 py-2 bg-amber-400 text-slate-950 font-bold rounded-xl hover:bg-amber-300 transition">
+          Got It!
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ================= GAME LOGIC & AUDIO ENGINE ================= -->
+  <script>
+    /* 6 Color Definitions (6 Cube Faces: Yellow, Red, Purple, Orange, Green, Blue) */
+    const COLOR_MAP = {
+      1: { name: 'yellow', label: 'Yellow', hex: '#FFD700', bgClass: 'bg-amber-400', textClass: 'text-amber-400', faceClass: 'face-yellow' },
+      2: { name: 'red',    label: 'Red',    hex: '#FF3366', bgClass: 'bg-rose-600',  textClass: 'text-rose-400',  faceClass: 'face-red' },
+      3: { name: 'purple', label: 'Purple', hex: '#9D4EDD', bgClass: 'bg-purple-600',textClass: 'text-purple-400',faceClass: 'face-purple' },
+      4: { name: 'orange', label: 'Orange', hex: '#FF7B00', bgClass: 'bg-orange-500',textClass: 'text-orange-400',faceClass: 'face-orange' },
+      5: { name: 'green',  label: 'Green',  hex: '#10B981', bgClass: 'bg-emerald-500',textClass: 'text-emerald-400',faceClass: 'face-green' },
+      6: { name: 'blue',   label: 'Blue',   hex: '#3B82F6', bgClass: 'bg-blue-600',  textClass: 'text-blue-400',  faceClass: 'face-blue' }
+    };
+
+    const BOARD_THEMES = [
+      { id: 'midnight', name: 'Midnight', class: 'theme-midnight', preview: 'bg-slate-900' },
+      { id: 'felt',     name: 'Felt Green', class: 'theme-felt',     preview: 'bg-emerald-900' },
+      { id: 'neon',     name: 'Cyber Neon', class: 'theme-neon',     preview: 'bg-purple-950' },
+      { id: 'crimson',  name: 'Crimson',  class: 'theme-crimson',  preview: 'bg-rose-950' },
+      { id: 'royal',    name: 'Royal Blue', class: 'theme-royal',    preview: 'bg-blue-950' },
+      { id: 'purple',   name: 'Deep Purple', class: 'theme-purple',  preview: 'bg-purple-900' }
+    ];
+
+    /* Rotation coordinates to land face (1-6) on front */
+    const FACE_ROTATIONS = {
+      1: { rotX: 0,    rotY: 0 },       // Yellow
+      2: { rotX: 0,    rotY: -180 },    // Red
+      3: { rotX: 0,    rotY: 90 },      // Purple
+      4: { rotX: 0,    rotY: -90 },     // Orange
+      5: { rotX: 90,   rotY: 0 },       // Green
+      6: { rotX: -90,  rotY: 0 }        // Blue
+    };
+
+    /* Game State - Endless Rolling with NO Bank/Resets */
+    const gameState = {
+      manualCounter: 0,
+      rollCount: 0,
+      rollSpeed: 1200,
+      soundEnabled: true,
+      confettiFX: true,
+      showFeedback: true,
+      isAutoSpinning: false,
+      autoSpinInterval: null,
+      isRolling: false,
+      boardTheme: 'midnight',
+      customColor: null,
+
+      hitColors: {
+        yellow: true,
+        red: true,
+        purple: true,
+        orange: true,
+        green: true,
+        blue: true
+      },
+
+      colorStats: {
+        yellow: 0,
+        red: 0,
+        purple: 0,
+        orange: 0,
+        green: 0,
+        blue: 0
+      },
+
+      dice: [
+        { rotX: 0, rotY: 0 },
+        { rotX: 0, rotY: 0 },
+        { rotX: 0, rotY: 0 },
+        { rotX: 0, rotY: 0 }
+      ],
+
+      history: []
+    };
+
+
+    /* Synthesized Audio Engine */
+    let audioCtx = null;
+
+    function getAudioContext() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      return audioCtx;
+    }
+
+    function playTone(freq, type, duration, gainVal = 0.1) {
+      if (!gameState.soundEnabled) return;
+      try {
+        const ctx = getAudioContext();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, ctx.currentTime);
+        gain.gain.setValueAtTime(gainVal, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + duration);
+      } catch (e) { console.error(e); }
+    }
+
+    function playRollSound() {
+      if (!gameState.soundEnabled) return;
+      let count = 0;
+      const interval = setInterval(() => {
+        playTone(140 + Math.random() * 220, 'triangle', 0.05, 0.05);
+        count++;
+        if (count > (gameState.rollSpeed / 80)) clearInterval(interval);
+      }, 70);
+    }
+
+    function playLandSound(hits) {
+      if (!gameState.soundEnabled) return;
+      playTone(520, 'sine', 0.12, 0.12);
+      if (hits > 0) {
+        setTimeout(() => playTone(650 + hits * 50, 'sine', 0.18, 0.15), 90);
+      }
+    }
+
+    function toggleSound() {
+      gameState.soundEnabled = !gameState.soundEnabled;
+      const icon = document.getElementById('sound-icon');
+      if (gameState.soundEnabled) {
+        icon.className = 'fa-solid fa-volume-high text-lg';
+        playTone(440, 'sine', 0.1);
+      } else {
+        icon.className = 'fa-solid fa-volume-xmark text-lg text-slate-500';
+      }
+    }
+
+
+    /* Build Pure Color 3D Faces (NO PIPS / NO NUMBERS) */
+    function buildPureColorCubeFaces(cubeEl) {
+      cubeEl.innerHTML = '';
+      for (let faceNum = 1; faceNum <= 6; faceNum++) {
+        const colorData = COLOR_MAP[faceNum];
+        const face = document.createElement('div');
+        face.className = `cube-face face-${faceNum} ${colorData.faceClass}`;
+        cubeEl.appendChild(face);
+      }
+    }
+
+
+    /* Initialization */
+    window.addEventListener('DOMContentLoaded', () => {
+      // Build 4 touching color dice
+      for (let i = 0; i < 4; i++) {
+        const cubeEl = document.getElementById(`cube-${i}`);
+        buildPureColorCubeFaces(cubeEl);
+      }
+
+      renderHitColorToggles();
+      renderBoardThemeChips();
+      renderColorStats();
+
+      window.addEventListener('keydown', (e) => {
+        if (e.code === 'Space' && !e.repeat) {
+          e.preventDefault();
+          spinDice();
+        }
+      });
+
+      initParticleCanvas();
+    });
+
+
+    /* Box 1: Hit Color Settings */
+    function renderHitColorToggles() {
+      const container = document.getElementById('hit-colors-container');
+      container.innerHTML = '';
+
+      Object.keys(COLOR_MAP).forEach(key => {
+        const color = COLOR_MAP[key];
+        const isActive = gameState.hitColors[color.name];
+
+        const btn = document.createElement('button');
+        btn.onclick = () => toggleHitColor(color.name);
+        btn.className = `flex items-center justify-between px-2.5 py-1.5 rounded-xl border text-xs font-bold transition-all ${
+          isActive 
+            ? `${color.bgClass} text-slate-950 border-white/60 shadow-md` 
+            : 'bg-slate-950/60 text-slate-400 border-slate-800 hover:border-slate-700'
+        }`;
+
+        btn.innerHTML = `
+          <span class="flex items-center gap-1.5">
+            <span class="w-2.5 h-2.5 rounded-full border border-black/20" style="background-color: ${color.hex}"></span>
+            ${color.label}
+          </span>
+          <i class="fa-solid ${isActive ? 'fa-check-circle' : 'fa-circle-xmark opacity-40'}"></i>
+        `;
+
+        container.appendChild(btn);
+      });
+    }
+
+    function toggleHitColor(colorName) {
+      gameState.hitColors[colorName] = !gameState.hitColors[colorName];
+      renderHitColorToggles();
+      if (gameState.soundEnabled) playTone(400, 'sine', 0.05);
+    }
+
+    function setAllColors(enable) {
+      Object.keys(gameState.hitColors).forEach(c => gameState.hitColors[c] = enable);
+      renderHitColorToggles();
+      if (gameState.soundEnabled) playTone(enable ? 600 : 300, 'sine', 0.08);
+    }
+
+
+    /* Box 2: Board Theme & Custom Color Picker */
+    function renderBoardThemeChips() {
+      const container = document.getElementById('board-themes-container');
+      container.innerHTML = '';
+
+      BOARD_THEMES.forEach(theme => {
+        const isActive = gameState.boardTheme === theme.id && !gameState.customColor;
+        const chip = document.createElement('button');
+        chip.onclick = () => setBoardTheme(theme.id);
+        chip.className = `flex flex-col items-center gap-1 p-1.5 rounded-xl border transition-all ${
+          isActive 
+            ? 'bg-amber-400/20 border-amber-400 ring-1 ring-amber-400 text-amber-300' 
+            : 'bg-slate-950/40 border-slate-800 hover:border-slate-700 text-slate-400'
+        }`;
+
+        chip.innerHTML = `
+          <div class="w-full h-3.5 rounded-lg ${theme.preview} border border-white/20"></div>
+          <span class="text-[10px] font-bold tracking-tight">${theme.name}</span>
+        `;
+
+        container.appendChild(chip);
+      });
+    }
+
+    function setBoardTheme(themeId) {
+      gameState.customColor = null;
+      gameState.boardTheme = themeId;
+      const themeObj = BOARD_THEMES.find(t => t.id === themeId);
+      if (themeObj) {
+        document.body.style.background = '';
+        document.body.className = `${themeObj.class} min-h-screen text-slate-100 font-sans transition-all duration-700 pb-12 select-none`;
+        document.getElementById('current-theme-badge').innerText = themeObj.name;
+      }
+      renderBoardThemeChips();
+      if (gameState.soundEnabled) playTone(500, 'sine', 0.05);
+    }
+
+    function applyCustomBoardColor(hexColor) {
+      gameState.customColor = hexColor;
+      document.body.className = 'min-h-screen text-slate-100 font-sans transition-all duration-700 pb-12 select-none';
+      document.body.style.background = `radial-gradient(circle at 50% 20%, ${hexColor} 0%, #020617 100%)`;
+      document.getElementById('current-theme-badge').innerText = 'Custom';
+      renderBoardThemeChips();
+    }
+
+
+    /* Box 3: Roll & FX Settings */
+    function changeRollSpeed(ms) {
+      gameState.rollSpeed = parseInt(ms, 10);
+    }
+
+    function toggleConfettiFX() {
+      gameState.confettiFX = !gameState.confettiFX;
+      const btn = document.getElementById('confetti-toggle-btn');
+      btn.innerText = gameState.confettiFX ? 'Enabled' : 'Disabled';
+      btn.className = gameState.confettiFX 
+        ? 'px-3 py-1 bg-emerald-600 text-white font-bold rounded-lg text-xs border border-emerald-400' 
+        : 'px-3 py-1 bg-slate-800 text-slate-400 font-bold rounded-lg text-xs border border-slate-600';
+    }
+
+    function toggleFeedback() {
+      gameState.showFeedback = !gameState.showFeedback;
+      const btn = document.getElementById('feedback-toggle-btn');
+      btn.innerText = gameState.showFeedback ? 'On' : 'Off';
+      btn.className = gameState.showFeedback 
+        ? 'px-3 py-1 bg-emerald-600 text-white font-bold rounded-lg text-xs border border-emerald-400' 
+        : 'px-3 py-1 bg-slate-800 text-slate-400 font-bold rounded-lg text-xs border border-slate-600';
+    }
+
+
+    /* Under-Dice Point Adjustment Control (-10, -5, -1, +0, +1, +5, +10) */
+    function adjustManualCounter(delta) {
+      gameState.manualCounter += delta;
+      document.getElementById('manual-counter-display').innerText = gameState.manualCounter;
+
+      if (delta !== 0) {
+        playTone(delta > 0 ? 600 + delta * 20 : 300 + delta * 15, 'sine', 0.1);
+      } else {
+        playTone(400, 'sine', 0.05);
+      }
+    }
+
+
+    /* Spin / Roll Mechanics - Endless Rolling */
+    function spinDice() {
+      if (gameState.isRolling) return;
+      gameState.isRolling = true;
+
+      const spinBtn = document.getElementById('spin-btn');
+      spinBtn.classList.add('opacity-75', 'cursor-not-allowed');
+
+      playRollSound();
+
+      let hitsThisRoll = 0;
+      const rollOutcomes = [];
+
+      for (let i = 0; i < 4; i++) {
+        const faceVal = Math.floor(Math.random() * 6) + 1; // 1-6
+        const colorData = COLOR_MAP[faceVal];
+        const isHit = !!gameState.hitColors[colorData.name];
+
+        // Track statistics
+        gameState.colorStats[colorData.name]++;
+
+        const rotBase = FACE_ROTATIONS[faceVal];
+        const extraX = (Math.floor(Math.random() * 3) + 3) * 360;
+        const extraY = (Math.floor(Math.random() * 3) + 3) * 360;
+
+        const dieObj = gameState.dice[i];
+        dieObj.rotX += extraX + rotBase.rotX;
+        dieObj.rotY += extraY + rotBase.rotY;
+
+        const cubeEl = document.getElementById(`cube-${i}`);
+        cubeEl.style.transition = `transform ${gameState.rollSpeed}ms cubic-bezier(0.18, 0.89, 0.32, 1.15)`;
+        cubeEl.style.transform = `rotateX(${dieObj.rotX}deg) rotateY(${dieObj.rotY}deg)`;
+
+        if (isHit) hitsThisRoll++;
+
+        rollOutcomes.push({
+          faceVal,
+          colorData,
+          isHit
+        });
+      }
+
+      setTimeout(() => {
+        gameState.isRolling = false;
+        gameState.rollCount++;
+        spinBtn.classList.remove('opacity-75', 'cursor-not-allowed');
+
+        playLandSound(hitsThisRoll);
+
+        // Optional Confetti when 3+ matches hit
+        if (hitsThisRoll >= 3 && gameState.confettiFX) {
+          spawnConfetti();
+        }
+
+        // Update Results Bar Readout
+        const resultsBar = document.getElementById('dice-results-bar');
+        if (gameState.showFeedback) {
+          resultsBar.innerHTML = rollOutcomes.map(o => `
+            <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold ${o.colorData.bgClass} text-slate-950 shadow border ${o.isHit ? 'ring-2 ring-emerald-300' : ''}">
+              ${o.colorData.label} ${o.isHit ? '✓' : ''}
+            </span>
+          `).join('');
+        } else {
+          resultsBar.innerHTML = `<span class="text-xs text-slate-300 font-bold">Landed Roll #${gameState.rollCount}</span>`;
+        }
+
+        renderColorStats();
+        addHistoryLog(rollOutcomes, hitsThisRoll);
+
+      }, gameState.rollSpeed);
+    }
+
+
+    /* Auto Spin */
+    function toggleAutoSpin() {
+      const btn = document.getElementById('auto-spin-btn');
+      if (gameState.isAutoSpinning) {
+        clearInterval(gameState.autoSpinInterval);
+        gameState.isAutoSpinning = false;
+        btn.innerHTML = '<i class="fa-solid fa-bolt text-amber-400"></i> Auto Spin';
+        btn.className = 'flex-1 sm:flex-initial px-4 py-3 bg-slate-800/90 hover:bg-slate-700 text-slate-200 font-bold text-xs uppercase tracking-wider rounded-xl border border-slate-600 flex items-center justify-center gap-2 transition whitespace-nowrap';
+      } else {
+        gameState.isAutoSpinning = true;
+        btn.innerHTML = '<i class="fa-solid fa-pause text-red-400"></i> Stop Auto';
+        btn.className = 'flex-1 sm:flex-initial px-4 py-3 bg-red-950/80 hover:bg-red-900 text-red-300 font-bold text-xs uppercase tracking-wider rounded-xl border border-red-500/50 flex items-center justify-center gap-2 transition animate-pulse whitespace-nowrap';
+        
+        spinDice();
+        gameState.autoSpinInterval = setInterval(() => {
+          if (!gameState.isRolling) spinDice();
+        }, gameState.rollSpeed + 350);
+      }
+    }
+
+
+    /* Render Color Distribution Stats */
+    function renderColorStats() {
+      document.getElementById('total-rolls-count').innerText = gameState.rollCount;
+      const container = document.getElementById('color-stats-list');
+      container.innerHTML = '';
+
+      const totalDiceLanded = gameState.rollCount * 4 || 1;
+
+      Object.keys(COLOR_MAP).forEach(key => {
+        const color = COLOR_MAP[key];
+        const count = gameState.colorStats[color.name] || 0;
+        const pct = Math.round((count / totalDiceLanded) * 100);
+
+        const item = document.createElement('div');
+        item.className = 'flex items-center gap-2';
+
+        item.innerHTML = `
+          <span class="w-16 font-semibold text-slate-300 flex items-center gap-1">
+            <span class="w-2 h-2 rounded-full" style="background-color:${color.hex}"></span>
+            ${color.label}
+          </span>
+          <div class="flex-1 bg-slate-950 rounded-full h-2 overflow-hidden border border-slate-800">
+            <div class="h-full ${color.bgClass}" style="width: ${pct}%"></div>
+          </div>
+          <span class="w-12 text-right font-bold text-slate-400">${count} <span class="text-[10px] text-slate-500">(${pct}%)</span></span>
+        `;
+
+        container.appendChild(item);
+      });
+    }
+
+
+    /* Live Roll History Log */
+    function addHistoryLog(outcomes, hits) {
+      gameState.history.unshift({
+        rollNum: gameState.rollCount,
+        outcomes,
+        hits
+      });
+
+      if (gameState.history.length > 25) gameState.history.pop();
+
+      const tbody = document.getElementById('history-table-body');
+      document.getElementById('history-count').innerText = `${gameState.rollCount} rolls recorded`;
+
+      tbody.innerHTML = '';
+      gameState.history.forEach(item => {
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-slate-900/60 transition';
+
+        const diceChipsHTML = item.outcomes.map(o => `
+          <span class="inline-block px-2 py-0.5 rounded text-[10px] font-bold ${o.colorData.bgClass} text-slate-950 shadow-sm">
+            ${o.colorData.label}
+          </span>
+        `).join(' ');
+
+        tr.innerHTML = `
+          <td class="p-2 font-bold text-slate-400">#${item.rollNum}</td>
+          <td class="p-2"><div class="flex items-center gap-1">${diceChipsHTML}</div></td>
+          <td class="p-2 text-center font-bold ${item.hits > 0 ? 'text-emerald-400' : 'text-slate-500'}">${item.hits} Hits</td>
+        `;
+
+        tbody.appendChild(tr);
+      });
+    }
+
+
+    /* Reset Counters */
+    function resetCounters() {
+      if (gameState.isAutoSpinning) toggleAutoSpin();
+      
+      gameState.manualCounter = 0;
+      gameState.rollCount = 0;
+      gameState.history = [];
+      Object.keys(gameState.colorStats).forEach(c => gameState.colorStats[c] = 0);
+
+      document.getElementById('manual-counter-display').innerText = '0';
+      document.getElementById('dice-results-bar').innerHTML = '<span class="text-xs text-slate-400 italic">Counter cleared. Press SPIN DICE to start rolling!</span>';
+      document.getElementById('history-table-body').innerHTML = '<tr><td colspan="3" class="p-4 text-center text-slate-500 italic">No rolls recorded yet. Press SPIN DICE to roll!</td></tr>';
+      document.getElementById('history-count').innerText = '0 rolls recorded';
+
+      renderColorStats();
+      if (gameState.soundEnabled) playTone(300, 'sine', 0.1);
+    }
+
+
+    function openInfoModal() {
+      document.getElementById('info-modal').classList.remove('hidden');
+    }
+
+    function closeInfoModal() {
+      document.getElementById('info-modal').classList.add('hidden');
+    }
+
+
+    /* Canvas Confetti Particles */
+    let canvas, ctx, particles = [];
+
+    function initParticleCanvas() {
+      canvas = document.getElementById('particle-canvas');
+      ctx = canvas.getContext('2d');
+      resizeCanvas();
+      window.addEventListener('resize', resizeCanvas);
+    }
+
+    function resizeCanvas() {
+      if (!canvas) return;
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+
+    function spawnConfetti() {
+      particles = [];
+      const colors = ['#FFD700', '#FF3366', '#9D4EDD', '#FF7B00', '#10B981', '#3B82F6'];
+      
+      for (let i = 0; i < 80; i++) {
+        particles.push({
+          x: canvas.width / 2,
+          y: canvas.height / 2,
+          vx: (Math.random() - 0.5) * 14,
+          vy: (Math.random() - 0.7) * 16,
+          size: Math.random() * 8 + 4,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          rotation: Math.random() * 360,
+          rotSpeed: (Math.random() - 0.5) * 10,
+          life: 80
+        });
+      }
+
+      animateParticles();
+    }
+
+    function animateParticles() {
+      if (particles.length === 0) return;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      particles.forEach((p, idx) => {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.3;
+        p.rotation += p.rotSpeed;
+        p.life -= 1;
+
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate((p.rotation * Math.PI) / 180);
+        ctx.fillStyle = p.color;
+        ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+        ctx.restore();
+
+        if (p.life <= 0 || p.y > canvas.height) {
+          particles.splice(idx, 1);
+        }
+      });
+
+      if (particles.length > 0) {
+        requestAnimationFrame(animateParticles);
+      }
+    }
+  </script>
+</body>
+</html></pre>
+        </body>
+    </html>
